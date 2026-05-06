@@ -504,7 +504,10 @@ function buildBoard(){
       const n=cellNum(r,c);
       const d=document.createElement('div');d.className='cell '+((r+c)%2===0?'lt':'dk');
       if(LADDERS[n])d.classList.add('lad');if(SNAKES[n])d.classList.add('sna');
-      if(n===100)d.style.cssText+=';background:#ffe066!important';
+      if(n===100){d.style.cssText+=';background:linear-gradient(135deg,#ffe066,#ffd700)!important;box-shadow:inset 0 0 20px rgba(255,215,0,.5)';
+        const e1=document.createElement('div');e1.className='cico';e1.textContent='👑';e1.style.cssText='position:absolute;top:6px;left:6px;font-size:.9rem';d.appendChild(e1);
+        const e2=document.createElement('div');e2.textContent='⭐';e2.style.cssText='position:absolute;bottom:6px;right:6px;font-size:.75rem';d.appendChild(e2);
+      }
       if(n===1)d.style.cssText+=';background:#d4f0ff!important';
       const cn=document.createElement('div');cn.className='cnum';cn.textContent=n;d.appendChild(cn);
       if(LADDERS[n]){const e=document.createElement('div');e.className='cico';e.textContent='🪜';d.appendChild(e);}
@@ -609,6 +612,7 @@ function processMove(v){
   log(p.emoji+' '+p.name+' 🎲 '+v,'d');
   let np=p.pos+v;if(np>100)np=100-(np-100);
   p.pos=np;moveToken(cur);renderPlayers();
+  checkCollisions(cur);
   setTimeout(async()=>{
     if(p.pos===100){if(gmode==='online')await syncRoomState({status:'finished'});winGame(cur);return;}
     if(LADDERS[p.pos]){log('🪜 '+p.name+' kena tangga di '+p.pos+'!','g');showQuiz('t',cur,p.pos,LADDERS[p.pos]);}
@@ -707,6 +711,18 @@ function renderPlayers(){
   });
 }
 function aiTurn(){if(!alive)return;log('🤖 '+players[cur].name+' berpikir...','x');setTimeout(doRoll,700);}
+
+// ── COLLISION CHECK ──
+function checkCollisions(movedIdx){
+  const moved=players[movedIdx];
+  players.forEach((p,idx)=>{
+    if(idx!==movedIdx&&p.pos===moved.pos&&p.pos!==0&&p.pos!==1){
+      p.pos=1;moveToken(idx);renderPlayers();
+      log('💥 '+p.name+' kena tendang ke kotak 1!','b');
+      toast('💥 '+p.name+' kena tendang! Kembali ke kotak 1','#e74c3c');
+    }
+  });
+}
 
 // ── ONLINE SYNC ──
 async function syncRoomAfterMove(){
