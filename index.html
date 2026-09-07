@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🐍 Ular & Tangga Cerdas</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- MathJax: render rumus matematika ($...$ atau $$...$$) di soal & opsi -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -12,9 +23,14 @@
   --green:#2ecc71;--purple:#9b59b6;--dark:#0f0326;--card:rgba(255,255,255,.07);
   --border:rgba(255,255,255,.13);--muted:rgba(255,255,255,.45);
 }
-body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-height:100vh;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+body::-webkit-scrollbar{width:9px}
+body::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
+body::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3)}
 .screen{display:none;min-height:100vh}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px}
 
 .srv-banner{display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:11px;font-size:.82rem;font-weight:700;margin-bottom:14px;transition:all .4s}
 .srv-banner.loading{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);color:rgba(255,255,255,.7)}
@@ -22,7 +38,7 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
 .srv-banner.err{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.35);color:#ff7675}
 .srv-banner button{margin-left:auto;padding:5px 12px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .2s;flex-shrink:0}
 .srv-banner button:hover{background:rgba(255,255,255,.1)}
-#setup-screen{background:linear-gradient(135deg,#0f0222,#1e0850,#091830)}
+#setup-screen{background:linear-gradient(135deg,#0f0222,#1e0850,#091830);padding-top:36px!important;padding-bottom:48px!important}
 .setup-card{background:var(--card);border:1.5px solid var(--border);border-radius:24px;padding:32px 26px;width:100%;max-width:460px;backdrop-filter:blur(14px);box-shadow:0 24px 64px rgba(0,0,0,.5)}
 .logo{font-family:'Fredoka One',cursive;font-size:2.6rem;text-align:center;background:linear-gradient(90deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
 .subtitle{text-align:center;color:var(--muted);font-size:.88rem;margin-bottom:24px}
@@ -37,11 +53,13 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold)}
 .field input::placeholder{color:rgba(255,255,255,.25)}
 .field select option{background:#1e0850}
-#pfields{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
-.prow{display:flex;align-items:center;gap:9px}
+#pfields{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.prow{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:9px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--border)}
+.prow-top{display:flex;align-items:center;gap:9px}
 .pdot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
-.prow input{flex:1;padding:8px 11px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-family:'Nunito',sans-serif;font-size:.86rem;outline:none}
-.prow input:focus{border-color:var(--gold)}
+.prow input,.prow select{flex:1;padding:8px 11px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.06);color:#fff;font-family:'Nunito',sans-serif;font-size:.86rem;outline:none}
+.prow input:focus,.prow select:focus{border-color:var(--gold)}
+.prow select option{background:#1e0850}
 .start-btn{width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a0000;font-family:'Fredoka One',cursive;font-size:1.25rem;cursor:pointer;letter-spacing:.5px;margin-top:6px;transition:all .2s;box-shadow:0 4px 18px rgba(255,107,53,.3)}
 .start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,107,53,.45)}
 .start-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
@@ -104,10 +122,11 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
 #qmodal{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px}
 #qmodal.on{display:flex;animation:fin .3s ease}
 @keyframes fin{from{opacity:0}to{opacity:1}}
-.qbox{background:linear-gradient(145deg,#130840,#241260);border:2px solid rgba(255,255,255,.13);border-radius:22px;padding:26px 22px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.75);animation:pop .35s cubic-bezier(.34,1.56,.64,1)}
+.qbox{background:linear-gradient(145deg,#130840,#241260);border:2px solid rgba(255,255,255,.13);border-radius:22px;padding:26px 22px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.75);animation:pop .35s cubic-bezier(.34,1.56,.64,1);max-height:88vh;overflow-y:auto}
 @keyframes pop{from{transform:scale(.8)translateY(20px);opacity:0}to{transform:scale(1)translateY(0);opacity:1}}
 .qbadge{display:inline-block;padding:4px 13px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
 .bt{background:#2ecc71;color:#000}.bs{background:#e74c3c;color:#fff}
+#qimg{display:none;width:100%;max-height:190px;object-fit:cover;border-radius:14px;margin-bottom:14px;border:1.5px solid rgba(255,255,255,.15)}
 .qq{font-size:1.02rem;font-weight:700;line-height:1.5;margin-bottom:14px}
 .tbar{height:5px;background:rgba(255,255,255,.1);border-radius:3px;margin-bottom:16px;overflow:hidden}
 .tfill{height:100%;border-radius:3px;background:linear-gradient(90deg,#2ecc71,var(--gold),#e74c3c);width:100%;transition:width 15s linear}
@@ -127,6 +146,11 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
 .rbtn:hover{transform:translateY(-2px)}
 .bige{font-size:3.8rem;animation:sp 1.5s linear infinite}
 @keyframes sp{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.toggle-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid var(--border);margin-bottom:12px;cursor:pointer}
+.toggle-row.disabled{opacity:.45;cursor:not-allowed}
+.toggle-row input[type=checkbox]{width:19px;height:19px;flex-shrink:0;accent-color:var(--gold);cursor:pointer}
+.toggle-row .tlabel{font-weight:700;font-size:.84rem;color:rgba(255,255,255,.85);line-height:1.35}
+.toggle-row .tsub{font-weight:600;font-size:.72rem;color:var(--muted);margin-top:1px}
 @media(max-width:600px){
   #bwrap{width:min(340px,96vw)}
   .panel{max-width:100%;width:100%}
@@ -153,6 +177,12 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
       <button class="mode-btn"    id="blocal"  onclick="setMode('local')"> <span class="icon">👥</span>Lokal</button>
       <button class="mode-btn"    id="bonline" onclick="setMode('online')"><span class="icon">🌐</span>Online</button>
     </div>
+    <div class="field" id="materiField" style="display:none">
+      <label>📘 Materi Soal</label>
+      <select id="materiSelect" onchange="onMateriChange()">
+        <option value="">Semua Materi</option>
+      </select>
+    </div>
     <div id="sec-players">
       <div id="mcfield" class="field" style="display:none">
         <label>Jumlah Pemain</label>
@@ -162,14 +192,36 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
           <option value="4">4 Pemain</option>
         </select>
       </div>
-      <div class="sec-title" id="players-label">Nama Pemain</div>
+      <label class="toggle-row" id="sheetToggleRow" for="useSheetData">
+        <input type="checkbox" id="useSheetData" onchange="buildPF()">
+        <div>
+          <div class="tlabel">📋 Ambil data pemain dari Spreadsheet</div>
+          <div class="tsub" id="sheetToggleSub">Pilih Kelas &amp; Nama dari data siswa. Nonaktifkan untuk isi manual.</div>
+        </div>
+      </label>
+      <div class="sec-title" id="players-label">Kelas &amp; Nama Pemain</div>
       <div id="pfields"></div>
       <button class="start-btn" id="startBtn" onclick="startGame()">🎮 Mulai Bermain!</button>
     </div>
     <div id="sec-online" style="display:none">
+      <label class="toggle-row" id="sheetToggleRowOnline" for="useSheetDataOnline">
+        <input type="checkbox" id="useSheetDataOnline" onchange="setupOnlineNameField()">
+        <div>
+          <div class="tlabel">📋 Ambil data dari Spreadsheet</div>
+          <div class="tsub" id="sheetToggleSubOnline">Pilih Kelas &amp; Nama dari data siswa. Nonaktifkan untuk isi manual.</div>
+        </div>
+      </label>
+      <div class="field" id="onlineKelasField">
+        <label>🏫 Kelas Kamu</label>
+        <select id="onlineKelas" onchange="onOnlineKelasChange()">
+          <option value="">Memuat data kelas...</option>
+        </select>
+      </div>
       <div class="field">
         <label>👤 Nama Kamu</label>
-        <input type="text" id="onlineName" placeholder="Nama pemain online">
+        <select id="onlineName">
+          <option value="">Pilih kelas terlebih dahulu</option>
+        </select>
       </div>
       <div class="room-section active" id="sec-create">
         <div class="info-box">
@@ -231,6 +283,8 @@ body{font-family:'Nunito',sans-serif;background:var(--dark);color:#fff;min-heigh
 <div id="qmodal">
   <div class="qbox">
     <div id="qbadge" class="qbadge bt">🪜 Tangga</div>
+    <div id="qmateri" style="display:none;font-size:.72rem;font-weight:800;letter-spacing:.5px;color:var(--muted);margin:-4px 0 10px">📘 </div>
+    <img id="qimg" alt="Gambar soal">
     <div id="qq" class="qq">Pertanyaan...</div>
     <div class="tbar"><div id="tfill" class="tfill"></div></div>
     <div id="qopts" class="qopts"></div>
@@ -274,15 +328,25 @@ const QS_DEFAULT=[
   {q:"Gas terbanyak di atmosfer?",     o:["Oksigen","CO₂","Nitrogen","Argon"],a:2},
 ];
 
-const GAS_URL='https://script.google.com/macros/s/AKfycbzOGz4niMMBoK-kBmf6iq0-fxYelugfIiJwgqOfyUVs54YCU4K0k_ZGJNNZv9RXItLd/exec';
+const GAS_URL='https://script.google.com/macros/s/AKfycbxBD36teDAYey739bwMiRRYiBuYHp6mB0yn2TFhhRI1oLTVWKFrsyH9v4wZbghjHz4egg/exec';
 let gasUrl=GAS_URL,gasOk=false;
 let gmode='ai';
 let players=[],cur=0,alive=false;
 let qi=0,qs=[],qtimer=null,bonus=false;
 let SNAKES={},LADDERS={};
+
+// ── Filter Materi ────────────────────────────────────────────
+let qsAll=[];        // seluruh soal yang dimuat dari server (tidak difilter)
+let qsPool=[];        // soal setelah difilter materi (belum diacak)
+let materiList=[];    // daftar materi unik
+let selectedMateri='';
 let gasConfig={jumlah_ular:10,jumlah_tangga:10};
-let onlineRoomId='',onlinePlayerIdx=-1,onlineIsHost=false;
+let onlineRoomId='',onlinePlayerIdx=-1,onlineIsHost=false,onlineMyKelas='';
 let pollTimer=null,onlineVersion=0,onlineMyName='';
+
+// ── Data siswa (nama & kelas) diambil dari sheet "siswa" ──────
+let siswaAll=[];   // [{nama, kelas}, ...]
+let kelasList=[];  // daftar kelas unik
 
 async function gasGet(params){
   const url=gasUrl+'?'+new URLSearchParams(params);
@@ -323,17 +387,66 @@ function setMode(m){
   buildPF();
 }
 
+// ── Toggle Manual vs Spreadsheet ───────────────────────────────
+function updateSheetToggleUI(){
+  const cb=document.getElementById('useSheetData');
+  const row=document.getElementById('sheetToggleRow');
+  const sub=document.getElementById('sheetToggleSub');
+  const hasData=kelasList.length>0;
+  cb.disabled=!hasData;
+  row.classList.toggle('disabled',!hasData);
+  sub.textContent=hasData
+    ? 'Pilih Kelas & Nama dari data siswa. Nonaktifkan untuk isi manual.'
+    : 'Data siswa belum tersedia dari server — gunakan input manual.';
+  if(!hasData)cb.checked=false;
+}
+function isSheetMode(){
+  const cb=document.getElementById('useSheetData');
+  return !!(cb&&cb.checked&&kelasList.length>0);
+}
+
+// ── Bangun form Kelas + Nama untuk tiap pemain (filter kelas → nama) ──
 function buildPF(){
   const n=gmode==='ai'?2:+document.getElementById('pc').value;
   const w=document.getElementById('pfields');w.innerHTML='';
+  const sheetMode=isSheetMode();
   for(let i=0;i<n;i++){
     const ai=gmode==='ai'&&i===1;
     const r=document.createElement('div');r.className='prow';
-    r.innerHTML=`<div class="pdot" style="background:${COLORS[i]}"></div>
-      <input id="pn${i}" type="text" placeholder="${ai?'🤖 Komputer AI':'Nama pemain '+(i+1)}"
-      ${ai?'disabled value="Komputer AI"':''}>`;
+    if(ai){
+      r.innerHTML=`<div class="prow-top">
+        <div class="pdot" style="background:${COLORS[i]}"></div>
+        <input value="Komputer AI" disabled>
+      </div>`;
+    }else if(sheetMode){
+      const opts=kelasList.map(k=>`<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+      r.innerHTML=`<div class="prow-top">
+          <div class="pdot" style="background:${COLORS[i]}"></div>
+          <select id="pk${i}" onchange="onKelasChange(${i})">
+            <option value="">Pilih Kelas</option>${opts}
+          </select>
+        </div>
+        <select id="pn${i}">
+          <option value="">Pilih Nama (pilih kelas dulu)</option>
+        </select>`;
+    }else{
+      r.innerHTML=`<div class="prow-top">
+        <div class="pdot" style="background:${COLORS[i]}"></div>
+        <input id="pk${i}" type="text" placeholder="Kelas (opsional)">
+      </div>
+      <input id="pn${i}" type="text" placeholder="Nama pemain ${i+1}">`;
+    }
     w.appendChild(r);
   }
+}
+function onKelasChange(i){
+  const kel=document.getElementById('pk'+i).value;
+  const sel=document.getElementById('pn'+i);
+  const list=siswaAll.filter(s=>s.kelas===kel);
+  sel.innerHTML='<option value="">Pilih Nama</option>'+list.map(s=>`<option value="${escapeHtml(s.nama)}">${escapeHtml(s.nama)}</option>`).join('');
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function setSrvBanner(state,msg,showRetry){
@@ -347,22 +460,136 @@ function setSrvBanner(state,msg,showRetry){
 async function initGAS(){
   setSrvBanner('loading','Memuat data dari server...',false);
   try{
-    const [qr,cfg]=await Promise.all([gasGet({action:'questions'}),gasGet({action:'config'})]);
+    const [qr,cfg,sw]=await Promise.all([
+      gasGet({action:'questions'}),
+      gasGet({action:'config'}),
+      gasGet({action:'siswa'})
+    ]);
     if(qr.ok&&qr.data&&qr.data.length){
-      qs=shuf([...qr.data]);gasOk=true;
+      qsAll=qr.data;gasOk=true;
       const cfgInfo=cfg.ok&&cfg.data?` • ${cfg.data.jumlah_ular||10} ular, ${cfg.data.jumlah_tangga||10} tangga`:'';
       setSrvBanner('ok',`${qr.data.length} soal berhasil dimuat${cfgInfo}`,false);
     }else{
-      gasOk=false;
+      gasOk=false;qsAll=[...QS_DEFAULT];
       setSrvBanner('err',`Gagal: ${qr.error||'Data soal kosong'} — menggunakan soal bawaan`,true);
     }
+    materiList=[...new Set(qsAll.map(q=>q.materi).filter(Boolean))].sort();
+    populateMateriSelect();
+    applyMateriFilter();
     if(cfg.ok&&cfg.data)gasConfig=cfg.data;
+    if(sw.ok&&Array.isArray(sw.data)){
+      siswaAll=sw.data;
+      kelasList=[...new Set(siswaAll.map(s=>s.kelas).filter(Boolean))].sort();
+    }
   }catch(e){
+    gasOk=false;qsAll=[...QS_DEFAULT];
+    materiList=[];populateMateriSelect();applyMateriFilter();
     setSrvBanner('err','Tidak dapat terhubung ke server — menggunakan soal bawaan',true);
   }
+  const cbLocal=document.getElementById('useSheetData');
+  if(cbLocal)cbLocal.checked=kelasList.length>0;
+  const cbOnline=document.getElementById('useSheetDataOnline');
+  if(cbOnline)cbOnline.checked=kelasList.length>0;
+  updateSheetToggleUI();
+  updateSheetToggleUIOnline();
+  buildPF();
+  setupOnlineNameField();
+}
+
+// ── Isi dropdown Materi & terapkan filter ke pool soal ─────────
+function populateMateriSelect(){
+  const sel=document.getElementById('materiSelect');
+  if(!sel)return;
+  const field=document.getElementById('materiField');
+  if(!materiList.length){
+    field.style.display='none';
+    sel.innerHTML='<option value="">Semua Materi</option>';
+    return;
+  }
+  field.style.display='';
+  const opts=materiList.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+  sel.innerHTML='<option value="">Semua Materi</option>'+opts;
+  sel.value=selectedMateri;
+}
+function applyMateriFilter(){
+  qsPool = selectedMateri ? qsAll.filter(q=>q.materi===selectedMateri) : qsAll.slice();
+  if(!qsPool.length) qsPool = qsAll.length ? qsAll.slice() : [...QS_DEFAULT];
+  resetQuizPool();
+}
+function onMateriChange(){
+  selectedMateri=document.getElementById('materiSelect').value;
+  applyMateriFilter();
+  toast(selectedMateri?`📘 Materi: ${selectedMateri}`:'📘 Semua materi dipakai','#ffd700');
+}
+function resetQuizPool(){
+  qi=0;qs=shuf([...(qsPool.length?qsPool:QS_DEFAULT)]);
 }
 
 buildPF();initGAS();
+
+// ── Field Kelas/Nama untuk mode Online (mengikuti toggle manual/spreadsheet) ──
+function updateSheetToggleUIOnline(){
+  const cb=document.getElementById('useSheetDataOnline');
+  const row=document.getElementById('sheetToggleRowOnline');
+  const sub=document.getElementById('sheetToggleSubOnline');
+  if(!cb)return;
+  const hasData=kelasList.length>0;
+  cb.disabled=!hasData;
+  row.classList.toggle('disabled',!hasData);
+  sub.textContent=hasData
+    ? 'Pilih Kelas & Nama dari data siswa. Nonaktifkan untuk isi manual.'
+    : 'Data siswa belum tersedia dari server — gunakan input manual.';
+  if(!hasData)cb.checked=false;
+}
+function isSheetModeOnline(){
+  const cb=document.getElementById('useSheetDataOnline');
+  return !!(cb&&cb.checked&&kelasList.length>0);
+}
+function setupOnlineNameField(){
+  const kField=document.getElementById('onlineKelasField');
+  const kSel=document.getElementById('onlineKelas');
+  if(!kSel)return;
+  updateSheetToggleUIOnline();
+  const sheetMode=isSheetModeOnline();
+  if(sheetMode){
+    if(kSel.tagName!=='SELECT'){
+      const sel=document.createElement('select');sel.id='onlineKelas';sel.onchange=onOnlineKelasChange;
+      kSel.parentElement.replaceChild(sel,kSel);
+    }
+    kField.style.display='';
+    kField.querySelector('label').textContent='🏫 Kelas Kamu';
+    const kSel2=document.getElementById('onlineKelas');
+    kSel2.innerHTML='<option value="">Pilih Kelas</option>'+kelasList.map(k=>`<option value="${escapeHtml(k)}">${escapeHtml(k)}</option>`).join('');
+    const nSel=document.getElementById('onlineName');
+    if(nSel&&nSel.tagName!=='SELECT'){
+      const sel=document.createElement('select');sel.id='onlineName';
+      sel.innerHTML='<option value="">Pilih kelas terlebih dahulu</option>';
+      nSel.parentElement.replaceChild(sel,nSel);
+    }else if(nSel){
+      nSel.innerHTML='<option value="">Pilih kelas terlebih dahulu</option>';
+    }
+  }else{
+    if(kSel.tagName!=='INPUT'){
+      const inp=document.createElement('input');inp.type='text';inp.id='onlineKelas';inp.placeholder='Kelas (opsional)';
+      kSel.parentElement.replaceChild(inp,kSel);
+    }
+    kField.style.display='';
+    kField.querySelector('label').textContent='🏫 Kelas Kamu (opsional)';
+    const nSel=document.getElementById('onlineName');
+    if(nSel&&nSel.tagName==='SELECT'){
+      const inp=document.createElement('input');
+      inp.type='text';inp.id='onlineName';inp.placeholder='Nama pemain online';
+      nSel.parentElement.replaceChild(inp,nSel);
+    }
+  }
+}
+function onOnlineKelasChange(){
+  const kel=document.getElementById('onlineKelas').value;
+  const sel=document.getElementById('onlineName');
+  if(!sel||sel.tagName!=='SELECT')return;
+  const list=siswaAll.filter(s=>s.kelas===kel);
+  sel.innerHTML='<option value="">Pilih Nama</option>'+list.map(s=>`<option value="${escapeHtml(s.nama)}">${escapeHtml(s.nama)}</option>`).join('');
+}
 
 // ── MUSIK ──
 let musicEnabled=false;
@@ -390,13 +617,28 @@ function stopMusic(){
 // ── START GAME ──
 async function startGame(){
   const n=gmode==='ai'?2:+document.getElementById('pc').value;
+  const sheetMode=isSheetMode();
   players=[];
   for(let i=0;i<n;i++){
-    const el=document.getElementById('pn'+i);
-    players.push({name:(el&&el.value.trim())||'Pemain '+(i+1),pos:0,color:COLORS[i],emoji:EMOJIS[i],score:0,isAI:gmode==='ai'&&i===1});
+    const isAI=gmode==='ai'&&i===1;
+    const elN=document.getElementById('pn'+i);
+    const elK=document.getElementById('pk'+i);
+    if(!isAI){
+      if(sheetMode&&(!elK||!elK.value||!elN||!elN.value)){
+        toast('Lengkapi kelas & nama semua pemain terlebih dahulu','#e74c3c');return;
+      }
+      if(!sheetMode&&(!elN||!elN.value.trim())){
+        toast('Isi nama semua pemain terlebih dahulu','#e74c3c');return;
+      }
+    }
+    players.push({
+      name:(elN&&elN.value.trim())||'Pemain '+(i+1),
+      kelas:(elK&&elK.value.trim&&elK.value.trim())||(elK&&elK.value)||'',
+      pos:0,color:COLORS[i],emoji:EMOJIS[i],score:0,isAI
+    });
   }
-  cur=0;alive=true;bonus=false;qi=0;
-  qs=shuf([...(qs.length?qs:QS_DEFAULT)]);
+  cur=0;alive=true;bonus=false;
+  resetQuizPool();
   const nS=gasConfig.jumlah_ular||10,nL=gasConfig.jumlah_tangga||10;
   const bd=generateBoard(nS,nL);SNAKES=bd.snakes;LADDERS=bd.ladders;
   launchGame(false);
@@ -404,12 +646,18 @@ async function startGame(){
 
 // ── ONLINE ──
 async function createOnlineRoom(){
-  const name=document.getElementById('onlineName').value.trim()||'Host';
-  onlineMyName=name;
+  const sheetMode=isSheetModeOnline();
+  const kSel=document.getElementById('onlineKelas');
+  const nSel=document.getElementById('onlineName');
+  const kelas=kSel?kSel.value.trim?kSel.value.trim():kSel.value:'';
+  const name=(nSel&&nSel.value.trim())||'';
+  if(sheetMode&&(!kelas||!name)){toast('Pilih kelas & nama kamu terlebih dahulu','#e74c3c');return;}
+  if(!sheetMode&&!name){toast('Isi nama kamu terlebih dahulu','#e74c3c');return;}
+  onlineMyName=name||'Host';onlineMyKelas=kelas;
   const nS=gasConfig.jumlah_ular||10,nL=gasConfig.jumlah_tangga||10;
   const bd=generateBoard(nS,nL);SNAKES=bd.snakes;LADDERS=bd.ladders;
   toast('Membuat room...','#ffd700');
-  const r=await gasPost({action:'createRoom',playerName:name,jumlah_ular:nS,jumlah_tangga:nL,snakes:SNAKES,ladders:LADDERS});
+  const r=await gasPost({action:'createRoom',playerName:onlineMyName,kelas:onlineMyKelas,jumlah_ular:nS,jumlah_tangga:nL,snakes:SNAKES,ladders:LADDERS});
   if(!r.ok){toast('Gagal: '+r.error,'#e74c3c');return;}
   onlineRoomId=r.data.roomId;onlinePlayerIdx=0;onlineIsHost=true;
   showLobby();startLobbyPoll();
@@ -417,14 +665,24 @@ async function createOnlineRoom(){
 async function joinOnlineRoom(){
   const code=document.getElementById('joinCode').value.trim().toUpperCase();
   if(!code||code.length<4){toast('Masukkan kode room yang valid','#e74c3c');return;}
-  const name=document.getElementById('onlineName').value.trim()||'Pemain';
-  onlineMyName=name;
+  const sheetMode=isSheetModeOnline();
+  const kSel=document.getElementById('onlineKelas');
+  const nSel=document.getElementById('onlineName');
+  const kelas=kSel?(kSel.value.trim?kSel.value.trim():kSel.value):'';
+  const name=(nSel&&nSel.value.trim())||'';
+  if(sheetMode&&(!kelas||!name)){toast('Pilih kelas & nama kamu terlebih dahulu','#e74c3c');return;}
+  if(!sheetMode&&!name){toast('Isi nama kamu terlebih dahulu','#e74c3c');return;}
+  onlineMyName=name||'Pemain';onlineMyKelas=kelas;
   toast('Bergabung ke room...','#ffd700');
-  const r=await gasPost({action:'joinRoom',roomId:code,playerName:name});
+  const r=await gasPost({action:'joinRoom',roomId:code,playerName:onlineMyName,kelas:onlineMyKelas});
   if(!r.ok){toast('Gagal: '+r.error,'#e74c3c');return;}
   onlineRoomId=r.data.roomId;onlinePlayerIdx=r.data.playerIdx;onlineIsHost=false;
-  if(!gasOk||!qs.length){try{const qr=await gasGet({action:'questions'});if(qr.ok&&qr.data.length)qs=shuf([...qr.data]);}catch{}}
-  if(!qs.length)qs=shuf([...QS_DEFAULT]);
+  if(!gasOk||!qsAll.length){
+    try{const qr=await gasGet({action:'questions'});if(qr.ok&&qr.data.length)qsAll=qr.data;}catch{}
+    materiList=[...new Set(qsAll.map(q=>q.materi).filter(Boolean))].sort();
+    populateMateriSelect();
+  }
+  applyMateriFilter();
   showLobby();startLobbyPoll();
 }
 function showLobby(){
@@ -450,9 +708,9 @@ async function lobbyPoll(){
     const room=r.data;renderLobbyPlayers(room.players);
     if(room.status==='playing'){
       stopPoll();SNAKES=room.snakes||{};LADDERS=room.ladders||{};
-      players=room.players.map((p,i)=>({name:p.name,pos:p.pos||0,color:COLORS[i],emoji:EMOJIS[i],score:p.score||0,isAI:false}));
+      players=room.players.map((p,i)=>({name:p.name,kelas:p.kelas||'',pos:p.pos||0,color:COLORS[i],emoji:EMOJIS[i],score:p.score||0,isAI:false}));
       cur=room.cur||0;onlineVersion=room.version;
-      if(!qs.length)qs=shuf([...QS_DEFAULT]);
+      if(!qs.length)resetQuizPool();
       launchGame(true);
     }
   }catch{}
@@ -462,7 +720,8 @@ function renderLobbyPlayers(plist){
   plist.forEach((p,i)=>{
     const d=document.createElement('div');d.className='rwp';
     d.innerHTML=`<div class="rwp-dot" style="background:${COLORS[i]}"></div>
-      <span style="font-weight:700;font-size:.9rem">${p.name}${p.isHost?' 👑':''}</span>
+      <span style="font-weight:700;font-size:.9rem">${escapeHtml(p.name)}${p.isHost?' 👑':''}</span>
+      <span style="font-size:.72rem;color:var(--muted)">${p.kelas?escapeHtml(p.kelas):''}</span>
       <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">${EMOJIS[i]}</span>`;
     w.appendChild(d);
   });
@@ -628,6 +887,16 @@ function showQuiz(type,pidx,from,to){
   const badge=document.getElementById('qbadge');
   badge.textContent=type==='t'?'🪜 Tangga — Jawab Benar, Naik!':'🐍 Ular — Jawab Benar, Bonus Dadu!';
   badge.className='qbadge '+(type==='t'?'bt':'bs');
+
+  const qmateri=document.getElementById('qmateri');
+  if(q.materi){qmateri.textContent='📘 '+q.materi;qmateri.style.display='block';}
+  else{qmateri.style.display='none';}
+
+  // Gambar soal (opsional, diambil dari kolom "gambar" di sheet)
+  const qimg=document.getElementById('qimg');
+  if(q.img){qimg.src=q.img;qimg.style.display='block';}
+  else{qimg.removeAttribute('src');qimg.style.display='none';}
+
   document.getElementById('qq').textContent=q.q;
   const ow=document.getElementById('qopts');ow.innerHTML='';
   const isMyTurn=gmode!=='online'||(cur===onlinePlayerIdx);
@@ -638,6 +907,12 @@ function showQuiz(type,pidx,from,to){
     if(!isMyTurn)b.disabled=true;
     b.onclick=()=>answer(i,q.a,type,pidx,from,to,ow);ow.appendChild(b);
   });
+
+  // Render rumus matematika (LaTeX) jika soal/opsi mengandung $...$ atau $$...$$
+  if(window.MathJax&&MathJax.typesetPromise){
+    MathJax.typesetPromise([document.getElementById('qq'),ow]).catch(()=>{});
+  }
+
   const tf=document.getElementById('tfill');
   tf.style.transition='none';tf.style.width='100%';
   requestAnimationFrame(()=>{tf.style.transition='width 15s linear';tf.style.width='0%';});
@@ -671,7 +946,7 @@ async function resolve(ok,type,pidx,from,to){
       log('✅ '+p.name+' benar! Bonus dadu!','g');toast('🎲 Benar! Bonus dadu! 🎉','#ffd700');
       bonus=true;updateTurn();
       if(gmode==='online'){
-        await syncRoomState({bonus:true,cur:cur,players:players.map(x=>({name:x.name,pos:x.pos,score:x.score}))});
+        await syncRoomState({bonus:true,cur:cur,players:players.map(x=>({name:x.name,kelas:x.kelas||'',pos:x.pos,score:x.score}))});
         if(cur===onlinePlayerIdx)document.getElementById('dice').removeAttribute('disabled');
       }else{if(p.isAI)setTimeout(aiTurn,1400);else document.getElementById('dice').removeAttribute('disabled');}
     }else{
@@ -704,8 +979,8 @@ function renderPlayers(){
     const d=document.createElement('div');d.className='pc'+(i===cur?' cur':'');
     d.style.borderColor=i===cur?p.color:'transparent';
     d.innerHTML=`<div class="pava" style="background:${p.color}22;border-color:${p.color}">${p.emoji}</div>
-      <div class="pinfo"><div class="pname" style="color:${p.color}">${p.name}${p.isAI?' 🤖':''}</div>
-      <div class="psub">Kotak ${p.pos} | ${p.score} poin</div></div>
+      <div class="pinfo"><div class="pname" style="color:${p.color}">${escapeHtml(p.name)}${p.isAI?' 🤖':''}</div>
+      <div class="psub">${p.kelas?escapeHtml(p.kelas)+' | ':''}Kotak ${p.pos} | ${p.score} poin</div></div>
       ${i===cur?'<div style="font-size:1.1rem">👈</div>':''}`;
     list.appendChild(d);
   });
@@ -727,7 +1002,7 @@ function checkCollisions(movedIdx){
 // ── ONLINE SYNC ──
 async function syncRoomAfterMove(){
   const nextCur=(cur+1)%players.length;
-  await syncRoomState({cur:nextCur,bonus:false,players:players.map(p=>({name:p.name,pos:p.pos,score:p.score}))});
+  await syncRoomState({cur:nextCur,bonus:false,players:players.map(p=>({name:p.name,kelas:p.kelas||'',pos:p.pos,score:p.score}))});
   bonus=false;cur=nextCur;renderPlayers();updateTurn();
 }
 async function syncRoomState(patch){
@@ -743,10 +1018,27 @@ async function gamePoll(){
     if(room.version===onlineVersion)return;onlineVersion=room.version;
     if(room.status==='finished'){stopPoll();return;}
     cur=room.cur||0;bonus=room.bonus||false;
-    room.players.forEach((rp,i)=>{if(players[i]){players[i].pos=rp.pos||0;players[i].score=rp.score||0;}});
+    room.players.forEach((rp,i)=>{if(players[i]){players[i].pos=rp.pos||0;players[i].score=rp.score||0;if(rp.kelas!==undefined)players[i].kelas=rp.kelas||'';}});
     players.forEach((_,i)=>moveToken(i));renderPlayers();updateTurn();
     if(room.quiz)toast('📢 '+room.quiz.msg,'#ffd700');
   }catch{}
+}
+
+// ── NILAI: kirim poin hasil pertandingan ke sheet "nilai" ──────
+async function submitNilaiAll(winnerIdx){
+  const jobs=players.filter(p=>!p.isAI).map(p=>
+    gasPost({
+      action:'saveNilai',
+      nama:p.name,
+      kelas:p.kelas||'',
+      skor:p.score,
+      mode:gmode,
+      posisi_akhir:p.pos,
+      menang: players[winnerIdx]===p,
+      roomId:onlineRoomId||''
+    }).catch(e=>console.warn('Gagal simpan nilai',e))
+  );
+  try{await Promise.all(jobs);}catch{}
 }
 
 // ── WIN ──
@@ -757,6 +1049,7 @@ function winGame(idx){
   document.getElementById('wtitle').textContent=p.emoji+' '+p.name+' Menang!';
   document.getElementById('wdesc').textContent='Mencapai kotak 100 dengan '+p.score+' poin!';
   document.getElementById('wmodal').classList.add('on');
+  submitNilaiAll(idx);
 }
 
 // ── UTIL ──
