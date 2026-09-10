@@ -353,7 +353,11 @@ async function gasGet(params){
   const r=await fetch(url);return r.json();
 }
 async function gasPost(body){
-  const r=await fetch(gasUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  // PENTING: gunakan 'text/plain' (bukan 'application/json') agar browser TIDAK
+  // mengirim CORS preflight (OPTIONS) ke Apps Script — GAS tidak punya doOptions(),
+  // jadi preflight akan gagal dan POST (termasuk saveNilai) tidak pernah terkirim.
+  // Server tetap bisa JSON.parse(e.postData.contents) seperti biasa.
+  const r=await fetch(gasUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
   return r.json();
 }
 
@@ -1036,7 +1040,15 @@ async function submitNilaiAll(winnerIdx){
       posisi_akhir:p.pos,
       menang: players[winnerIdx]===p,
       roomId:onlineRoomId||''
-    }).catch(e=>console.warn('Gagal simpan nilai',e))
+    }).then(r=>{
+      if(!r||r.ok===false){
+        console.warn('Gagal simpan nilai',p.name,r&&r.error);
+        toast('⚠️ Nilai '+p.name+' gagal tersimpan ke Sheet','#e74c3c');
+      }
+    }).catch(e=>{
+      console.warn('Gagal simpan nilai',p.name,e);
+      toast('⚠️ Nilai '+p.name+' gagal tersimpan (cek koneksi)','#e74c3c');
+    })
   );
   try{await Promise.all(jobs);}catch{}
 }
